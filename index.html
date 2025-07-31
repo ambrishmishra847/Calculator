@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator with Buttons</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+        }
+        .calculator {
+            border: 2px solid #555;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            width: 320px;
+            overflow: hidden;
+        }
+        #display {
+            width: 100%;
+            height: 70px;
+            border: none;
+            background-color: #2a2a2a;
+            color: #fff;
+            text-align: right;
+            font-size: 2.8em;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+        button {
+            height: 70px;
+            font-size: 1.6em;
+            border: 1px solid #b5b5b5;
+            cursor: pointer;
+            background-color: #f9f9f9;
+        }
+        button:not(.operator):hover {
+            background-color: #eaeaea;
+        }
+        button:not(.operator):active {
+            background-color: #d0d0d0;
+        }
+        .operator {
+            background-color: orange;
+            color: white;
+        }
+        .operator:hover {
+            background-color:red;
+        }
+        .operator:active {
+            background-color: green;
+        }
+        .clear-btn {
+            background-color: #d4d4d2;
+        }
+        .clear-btn:hover {
+            background-color: #c0c0be;
+        }
+        .zero-btn {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="display" readonly>
+        <div class="buttons">
+            <button onclick="clearDisplay()" class="clear-btn" style="grid-column: span 2;">C</button>
+            <button onclick="backspace()" class="clear-btn">⌫</button>
+            <button onclick="chooseOperation('/')" class="operator">/</button>
+
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button onclick="chooseOperation('*')" class="operator">*</button>
+
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button onclick="chooseOperation('-')" class="operator">-</button>
+
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button onclick="chooseOperation('+')" class="operator">+</button>
+
+            <button onclick="appendNumber('0')" class="zero-btn">0</button>
+            <button onclick="appendPoint()">.</button>
+            <button onclick="calculate()" class="operator">=</button>
+        </div>
+    </div>
+    <script>
+        const display = document.getElementById('display');
+
+        let firstValue = '';
+        let operator = '';
+        let waitingForSecondValue = false;
+
+        function appendNumber(number) {
+            if (waitingForSecondValue) {
+                display.value = number;
+                waitingForSecondValue = false;
+            } else {
+                if (display.value === '0' && number !== '.') {
+                    display.value = number;
+                } else {
+                    display.value += number;
+                }
+            }
+        }
+
+        function appendPoint() {
+            if (waitingForSecondValue) {
+                display.value = '0.';
+                waitingForSecondValue = false;
+                return;
+            }
+            display.value += '.';
+        }
+
+        function chooseOperation(op) {
+            if (operator) {
+                calculate();
+            }
+            
+            firstValue = display.value;
+            operator = op;
+            waitingForSecondValue = true;
+        }
+
+        function calculate() {
+            const secondValue = display.value;
+            let result = 0;
+
+            const num1 = parseFloat(firstValue);
+            const num2 = parseFloat(secondValue);
+
+            switch (operator) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '*':
+                    result = num1 * num2;
+                    break;
+                case '/':
+                    result = num1 / num2;
+                    break;
+                default:
+                    return;
+            }
+
+            display.value = parseFloat(result.toFixed(10));
+            firstValue = display.value;
+            operator = '';
+            waitingForSecondValue = true;
+        }
+        function clearDisplay() {
+            display.value = '0';
+            firstValue = '';
+            operator = '';
+            waitingForSecondValue = false;
+        }
+        function backspace() {
+            display.value = display.value.slice(0, -1);
+            if (display.value === '') {
+                display.value = '0';
+            }
+        }
+        window.onload = function() {
+            clearDisplay();
+        };
+    </script>
+</body>
+</html>
